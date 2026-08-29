@@ -1,0 +1,131 @@
+{
+  "common": {
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "loading": "Loading…",
+    "on": "On",
+    "off": "Off",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "userId": "User ID"
+  },
+  "language": {
+    "label": "Language",
+    "triggerLabel": "Language: {{language}}",
+    "followSystem": "System",
+    "followSystemWithLanguage": "System ({{language}})",
+    "enUS": "English",
+    "zhCN": "中文"
+  },
+  "errors": {
+    "notFound": {
+      "code": "404",
+      "title": "Page not found",
+      "description": "The page you're looking for doesn't exist or may have been moved.",
+      "backHome": "Back to home"
+    },
+    "generic": {
+      "title": "Something went wrong",
+      "description": "An unexpected error occurred. You can try again or return to the home page.",
+      "tryAgain": "Try again",
+      "backHome": "Back to home"
+    }
+  },
+  "nav": {
+    "learn": "Learn",
+    "daily": "Daily",
+    "leaderboard": "Ranks",
+    "account": "Profile"
+  },
+  "onboarding": {
+    "skip": "Skip",
+    "back": "Back",
+    "welcomeTitle": "Welcome to StarQuest",
+    "welcomeBody": "Light up the night sky one level at a time. A few minutes a day makes you the stargazing expert among your friends.",
+    "start": "Start exploring",
+    "goalTitle": "What do you want to learn first?",
+    "goalBody": "Don't worry — you can learn every track later. Let's just pick a starting point.",
+    "goalStargazing": "Stargazing",
+    "goalStargazingDesc": "Star-spotting you can use tonight",
+    "goalCosmos": "The Cosmos",
+    "goalCosmosDesc": "Solar System, galaxies & beyond",
+    "goalPhenomena": "Sky Phenomena",
+    "goalPhenomenaDesc": "Eclipses, meteor showers, auroras",
+    "dailyTitle": "How much per day?",
+    "dailyBody": "Set a small goal — it's easier to keep the streak. You can change it anytime.",
+    "dailyCasual": "Casual",
+    "dailyCasualDesc": "1 level/day · ~3 min",
+    "dailyRegular": "Steady",
+    "dailyRegularDesc": "2 levels/day · ~6 min",
+    "dailySerious": "Serious",
+    "dailySeriousDesc": "3 levels/day · ~10 min",
+    "readyTitle": "You're all set!",
+    "readyBody": "Your first stop is lit up — let's go 🚀",
+    "enter": "Enter the star map",
+    "next": "Continue"
+  },
+  "learn": {
+    "appTitle": "StarQuest · Astronomy",
+    "studiedToday": "You've finished a lesson today 🎉",
+    "notStudied": "No lesson yet today — light up a star!",
+    "greetStargazing": "Today, let's learn to read the night sky 🔭",
+    "greetCosmos": "Today, let's tour the Solar System 🪐",
+    "greetPhenomena": "Today, uncover the secrets behind sky events ☄️",
+    "unitProgress": "{{done}}/{{total}} levels",
+    "sectionLabel": "SECTION {{section}} · {{done}}/{{total}} cleared",
+    "start": "Start",
+    "review": "Review",
+    "locked": "Locked",
+    "startWith": "Start · {{subtitle}}"
+  },
+  "lesson": {
+    "exit": "Exit lesson",
+    "question": "Q {{current}}/{{total}}",
+    "combo": "Combo ×{{count}}",
+    "next": "Next",
+    "finish": "Finish lesson",
+    "correct": "Correct!",
+    "retry": "Not quite",
+    "gotIt": "Got it",
+    "settleTitle": "Level lit up!",
+    "correctCount": "Correct",
+    "gainedXp": "XP gained",
+    "streakPlus": "Streak",
+    "claim": "Claim reward, back to map",
+    "notFoundTitle": "Lesson not found",
+    "notFoundDesc": "It may not be unlocked yet, or the link is invalid.",
+    "backToMap": "Back to map"
+  },
+  "daily": {
+    "title": "Daily Question",
+    "todayQuestion": "Today's question",
+    "challenge": "Today's challenge",
+    "rewardTitle": "Answer right for +{{xp}} XP",
+    "rewardDesc": "One astronomy question a day — keep your streak alive 🔥",
+    "doneNote": "✅ Today's question is done. Come back tomorrow to keep your streak!"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "subtitle": "Weekly XP · Silver League",
+    "myXp": "Your XP",
+    "leagueSilver": "Silver League",
+    "leagueDesc": "Stay in the top 3 to advance to Gold this week ⬆️",
+    "you": " (you)",
+    "points": "pts"
+  },
+  "account": {
+    "role": "Lv.{{level}} · Astronomy Learner",
+    "streak": "Day streak",
+    "totalXp": "Total XP",
+    "progress": "Progress",
+    "badgeWall": "Badges",
+    "unlockedCount": "Unlocked {{done}}/{{total}}",
+    "appearance": "Appearance",
+    "themeDark": "Night sky",
+    "themeLight": "Bright",
+    "languageLabel": "Language"
+  }
+}

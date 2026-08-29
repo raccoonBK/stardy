@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "Stardy · 星旅",
+    "slug": "stardy",
+    "scheme": "stardy",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0D0D0B"
+    },
+    "ios": {
+      "bundleIdentifier": "com.stardy.app",
+      "supportsTablet": false,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.stardy.app",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#0D0D0B",
+        "foregroundImage": "./assets/adaptive-icon.png"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/favicon.png",
+      "name": "Stardy · 星旅",
+      "short_name": "Stardy",
+      "start_url": "/",
+      "display": "standalone",
+      "background_color": "#0D0D0B",
+      "theme_color": "#0D0D0B"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-splash-screen",
+      "expo-asset",
+      [
+        "expo-system-ui",
+        { "backgroundColor": "#0D0D0B" }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

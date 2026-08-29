@@ -1,0 +1,465 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --font-heading: var(--font-heading);
+  --color-cream: var(--cream);
+  --color-yellow: var(--yellow);
+  --color-mint: var(--mint);
+  --color-lilac: var(--lilac);
+  --color-night-bg: var(--night-bg);
+  --color-night-sky: var(--night-sky);
+  --color-night-star: var(--night-star);
+  --color-night-warm: var(--night-warm);
+}
+
+body {
+  font-family: var(--font-sans);
+  /* Kill the ~300ms synthetic click delay on touch devices. */
+  touch-action: manipulation;
+}
+
+/* Prevent iOS WKWebView focus auto-zoom on form controls below the sm breakpoint.
+ * `!important` is required: Tailwind utility classes (text-sm, text-[15px]) outrank
+ * type selectors on specificity, and `@media` doesn't change that. */
+@media (max-width: 640px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+:root {
+  --background: #FFF6E6;
+  --foreground: #111111;
+  --card: #FFFFFF;
+  --card-foreground: #111111;
+  --popover: #FFFFFF;
+  --popover-foreground: #111111;
+  --primary: #2563EB;
+  --primary-foreground: #FFFFFF;
+  --secondary: #0E4FD4;
+  --secondary-foreground: #FFFFFF;
+  --muted: #F2F4F7;
+  --muted-foreground: #53606C;
+  --accent: #FFD93D;
+  --accent-foreground: #111111;
+  --destructive: #FF3B30;
+  --border: rgba(17, 17, 17, 0.08);
+  --input: rgba(17, 17, 17, 0.12);
+  --ring: #2563EB;
+  --chart-1: #2563EB;
+  --chart-2: #FFD93D;
+  --chart-3: #3DD697;
+  --chart-4: #C4B5FD;
+  --chart-5: #D98B6A;
+  --radius: 1rem;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #111111;
+  --sidebar-primary: #2563EB;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #FFD93D;
+  --sidebar-accent-foreground: #111111;
+  --sidebar-border: rgba(17, 17, 17, 0.08);
+  --sidebar-ring: #2563EB;
+
+  /* App-specific brand + night-sky tokens */
+  --cream: #FFF6E6;
+  --yellow: #FFD93D;
+  --mint: #3DD697;
+  --lilac: #C4B5FD;
+  --night-bg: #1A2E52;
+  --night-sky: #244F7B;
+  --night-star: #E8D5C0;
+  --night-warm: #D98B6A;
+
+  --font-sans: "Inter", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+  --font-heading: "Poppins", "Inter", "Noto Sans SC", system-ui, sans-serif;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* ── App: playful sticker + night-sky utilities ───────────────────── */
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+/* Chunky "hard" drop shadow that gives the sticker/plastic look */
+.shadow-hard {
+  box-shadow: 0 7px 0 rgba(17, 17, 17, 0.08);
+}
+.shadow-hard-blue {
+  box-shadow: 0 7px 0 #0b44bc;
+}
+.shadow-soft {
+  box-shadow: 0 12px 0 rgba(17, 17, 17, 0.08), 0 22px 40px rgba(37, 99, 235, 0.16);
+}
+
+/* Cream ground with soft warm/blue glows + dotted grid (learn/other tabs) */
+.cream-ground {
+  background:
+    radial-gradient(circle at 82% 6%, rgba(255, 217, 61, 0.5), transparent 26%),
+    radial-gradient(circle at 6% 20%, rgba(61, 214, 151, 0.24), transparent 24%),
+    linear-gradient(180deg, #fff8ec 0%, #fff1d7 100%);
+}
+.cream-ground::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  background-image: radial-gradient(#2563eb 1.1px, transparent 1.1px);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(180deg, transparent, #000 16%, #000 82%, transparent);
+}
+
+/* Night-sky ground for the star lesson map */
+.night-ground {
+  background:
+    radial-gradient(circle at 78% 12%, rgba(232, 213, 192, 0.16), transparent 34%),
+    radial-gradient(circle at 20% 78%, rgba(217, 139, 106, 0.16), transparent 32%),
+    linear-gradient(180deg, #223b66 0%, #1a2e52 46%, #12213f 100%);
+}
+.night-pixel-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    radial-gradient(var(--night-star) 1px, transparent 1px),
+    radial-gradient(rgba(217, 139, 106, 0.9) 1px, transparent 1px);
+  background-size: 43px 43px, 71px 71px;
+  background-position: 7px 11px, 21px 9px;
+}
+.night-panel {
+  background: rgba(9, 20, 39, 0.58);
+  border: 1px solid rgba(232, 213, 192, 0.28);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+}
+
+@keyframes node-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 8px rgba(232, 213, 192, 0.14), 0 0 26px rgba(232, 213, 192, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 13px rgba(232, 213, 192, 0.06), 0 0 38px rgba(232, 213, 192, 0.9);
+  }
+}
+.animate-node-pulse {
+  animation: node-pulse 1.8s ease-in-out infinite;
+}
+@keyframes tile-pulse {
+  0%,
+  100% {
+    box-shadow: 0 7px 0 #0b44bc, 0 0 0 4px rgba(255, 217, 61, 0.5);
+  }
+  50% {
+    box-shadow: 0 7px 0 #0b44bc, 0 0 0 9px rgba(255, 217, 61, 0.28);
+  }
+}
+.animate-tile-pulse {
+  animation: tile-pulse 2.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-node-pulse,
+  .animate-tile-pulse {
+    animation: none !important;
+  }
+}
+
+/* ── Semantic skin layer (theme-switchable) ─────────────────────────
+   Every page/component uses these `.sk-*` classes; the actual values
+   flip based on the [data-theme] attribute set on each screen root.
+   dark  = night-sky star world ; light = bright cobalt+yellow skin. */
+
+[data-theme="dark"] {
+  --sk-title: var(--night-star);
+  --sk-sub: #c8d5e1;
+  --sk-on-panel: #ffffff;
+}
+[data-theme="light"] {
+  --sk-title: #111111;
+  --sk-sub: #53606c;
+  --sk-on-panel: #111111;
+}
+
+/* Page background */
+.sk-ground {
+  position: relative;
+}
+[data-theme="dark"] .sk-ground {
+  background:
+    radial-gradient(circle at 78% 12%, rgba(232, 213, 192, 0.16), transparent 34%),
+    radial-gradient(circle at 20% 78%, rgba(217, 139, 106, 0.16), transparent 32%),
+    linear-gradient(180deg, #223b66 0%, #1a2e52 46%, #12213f 100%);
+}
+[data-theme="light"] .sk-ground {
+  background:
+    radial-gradient(circle at 82% 6%, rgba(255, 217, 61, 0.5), transparent 26%),
+    radial-gradient(circle at 6% 20%, rgba(61, 214, 151, 0.24), transparent 24%),
+    linear-gradient(180deg, #fff8ec 0%, #fff1d7 100%);
+}
+/* dotted decoration layer — starfield on dark, blue dot-grid on light */
+.sk-decor {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+[data-theme="dark"] .sk-decor {
+  opacity: 0.55;
+  background-image:
+    radial-gradient(var(--night-star) 1px, transparent 1px),
+    radial-gradient(rgba(217, 139, 106, 0.9) 1px, transparent 1px);
+  background-size: 43px 43px, 71px 71px;
+  background-position: 7px 11px, 21px 9px;
+}
+[data-theme="light"] .sk-decor {
+  opacity: 0.4;
+  background-image: radial-gradient(#2563eb 1.1px, transparent 1.1px);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(180deg, transparent, #000 16%, #000 82%, transparent);
+}
+
+/* Text tokens */
+.sk-title {
+  color: var(--sk-title);
+}
+/* Big page/header title — high-contrast pop against busy grounds.
+   Uses a solid pill plate so the text never blends into the starfield. */
+.sk-page-title {
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3em 0.7em;
+  border-radius: 9999px;
+}
+[data-theme="dark"] .sk-page-title {
+  color: #ffffff;
+  background: #2563eb;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.35), 0 10px 24px rgba(0, 0, 0, 0.4);
+}
+[data-theme="light"] .sk-page-title {
+  color: #ffffff;
+  background: #2563eb;
+  box-shadow: 0 5px 0 #0e4fd4, 0 8px 18px rgba(37, 99, 235, 0.35);
+}
+.sk-sub {
+  color: var(--sk-sub);
+}
+
+/* Panels / cards */
+[data-theme="dark"] .sk-panel {
+  background: rgba(9, 20, 39, 0.58);
+  border: 1px solid rgba(232, 213, 192, 0.28);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+  color: #fff;
+}
+[data-theme="light"] .sk-panel {
+  background: #ffffff;
+  border: 2px solid rgba(17, 17, 17, 0.08);
+  box-shadow: 0 7px 0 rgba(17, 17, 17, 0.08);
+  color: #111;
+}
+
+/* Status pill (streak / xp) */
+[data-theme="dark"] .sk-pill {
+  border: 1px solid rgba(232, 213, 192, 0.24);
+  background: rgba(232, 213, 192, 0.12);
+  color: var(--night-star);
+}
+[data-theme="light"] .sk-pill {
+  border: 2px solid rgba(17, 17, 17, 0.08);
+  background: #fff;
+  color: #111;
+  box-shadow: 0 5px 0 rgba(17, 17, 17, 0.06);
+}
+
+/* Leaderboard rank row — tonal, low-contrast, same family as the ground.
+   light = warm morandi taupe plate + deep-brown text;
+   dark  = deep navy plate + warm light text. */
+[data-theme="dark"] .sk-rank-row {
+  background: rgba(24, 42, 74, 0.72);
+  border: 1px solid rgba(232, 213, 192, 0.14);
+  color: #e6ddcf;
+}
+[data-theme="light"] .sk-rank-row {
+  background: #ece5da;
+  border: 1px solid rgba(90, 70, 55, 0.1);
+  color: #5a3f2c;
+}
+/* "me" highlight row — slightly stronger tone, still in family */
+[data-theme="dark"] .sk-rank-me {
+  background: rgba(232, 213, 192, 0.16);
+  border: 1px solid rgba(232, 213, 192, 0.4);
+  color: #f5ecdd;
+}
+[data-theme="light"] .sk-rank-me {
+  background: #ddd0bf;
+  border: 1px solid rgba(90, 70, 55, 0.22);
+  color: #4a3222;
+}
+
+/* Selected chip / active tab accent block */
+[data-theme="dark"] .sk-accent {
+  background: var(--night-star);
+  color: #13294b;
+}
+[data-theme="light"] .sk-accent {
+  background: #2563eb;
+  color: #fff;
+}
+
+/* Inactive chip */
+[data-theme="dark"] .sk-chip {
+  background: rgba(9, 20, 39, 0.58);
+  border: 1px solid rgba(232, 213, 192, 0.28);
+  color: #c8d5e1;
+}
+[data-theme="light"] .sk-chip {
+  background: #fff;
+  border: 2px solid rgba(17, 17, 17, 0.08);
+  color: #53606c;
+}
+
+/* Bottom-nav bar surface */
+[data-theme="dark"] .sk-nav {
+  background: rgba(9, 20, 39, 0.58);
+  border: 1px solid rgba(232, 213, 192, 0.28);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+}
+[data-theme="light"] .sk-nav {
+  background: #fff;
+  border: 2px solid rgba(17, 17, 17, 0.08);
+  box-shadow: 0 7px 0 rgba(17, 17, 17, 0.08);
+}
+/* nav item states */
+[data-theme="dark"] .sk-nav-item {
+  color: #c8d5e1;
+}
+[data-theme="dark"] .sk-nav-item[data-active="true"] {
+  background: rgba(232, 213, 192, 0.18);
+  color: var(--night-star);
+}
+[data-theme="light"] .sk-nav-item {
+  color: #53606c;
+}
+[data-theme="light"] .sk-nav-item[data-active="true"] {
+  background: #2563eb;
+  color: #fff;
+}
+
+/* Hero card (daily / profile banner) */
+[data-theme="dark"] .sk-hero {
+  background: linear-gradient(135deg, #244f7b 0%, #1a2e52 100%);
+  color: #fff;
+  border: 1px solid rgba(232, 213, 192, 0.28);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+}
+[data-theme="light"] .sk-hero {
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 12px 0 rgba(17, 17, 17, 0.08), 0 22px 40px rgba(37, 99, 235, 0.16);
+}
+/* decorative blobs inside hero — warm star tone on dark, yellow on light */
+[data-theme="dark"] .sk-hero-blob {
+  background: rgba(232, 213, 192, 0.22);
+}
+[data-theme="light"] .sk-hero-blob {
+  background: var(--yellow);
+}

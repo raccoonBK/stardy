@@ -1,0 +1,131 @@
+{
+  "common": {
+    "signIn": "登录",
+    "signOut": "退出登录",
+    "loading": "加载中…",
+    "on": "开",
+    "off": "关",
+    "close": "关闭",
+    "save": "保存",
+    "cancel": "取消",
+    "edit": "编辑",
+    "delete": "删除",
+    "userId": "用户 ID"
+  },
+  "language": {
+    "label": "语言",
+    "triggerLabel": "语言：{{language}}",
+    "followSystem": "跟随系统",
+    "followSystemWithLanguage": "跟随系统（{{language}}）",
+    "enUS": "English",
+    "zhCN": "中文"
+  },
+  "errors": {
+    "notFound": {
+      "code": "404",
+      "title": "页面未找到",
+      "description": "你访问的页面不存在，或已被移动。",
+      "backHome": "返回首页"
+    },
+    "generic": {
+      "title": "出了点问题",
+      "description": "发生了意外错误。你可以重试，或返回首页继续。",
+      "tryAgain": "重试",
+      "backHome": "返回首页"
+    }
+  },
+  "nav": {
+    "learn": "学习",
+    "daily": "每日一题",
+    "leaderboard": "排行榜",
+    "account": "账户"
+  },
+  "onboarding": {
+    "skip": "跳过",
+    "back": "上一步",
+    "welcomeTitle": "欢迎来到星旅",
+    "welcomeBody": "像玩游戏一样，一关一关点亮夜空。每天几分钟，成为身边最懂天文的人。",
+    "start": "开始探索",
+    "goalTitle": "你最想先学什么？",
+    "goalBody": "别担心，之后每条主线都能学，我们先帮你从这里开始。",
+    "goalStargazing": "观星入门",
+    "goalStargazingDesc": "抬头就能用的认星技巧",
+    "goalCosmos": "宇宙常识",
+    "goalCosmosDesc": "太阳系、星系与更远",
+    "goalPhenomena": "天文现象",
+    "goalPhenomenaDesc": "日月食、流星雨、极光",
+    "dailyTitle": "每天想学多久？",
+    "dailyBody": "设一个小目标，坚持更轻松。随时可以调整。",
+    "dailyCasual": "轻松",
+    "dailyCasualDesc": "每天 1 关 · 约 3 分钟",
+    "dailyRegular": "稳步",
+    "dailyRegularDesc": "每天 2 关 · 约 6 分钟",
+    "dailySerious": "认真",
+    "dailySeriousDesc": "每天 3 关 · 约 10 分钟",
+    "readyTitle": "一切就绪！",
+    "readyBody": "为你点亮了第一站，出发吧 🚀",
+    "enter": "进入星图",
+    "next": "继续"
+  },
+  "learn": {
+    "appTitle": "星旅 · 天文闯关",
+    "studiedToday": "今日已完成一课 🎉",
+    "notStudied": "今天还没学习，点亮一颗星吧",
+    "greetStargazing": "今天，一起认认夜空的星吧 🔭",
+    "greetCosmos": "今天，去太阳系逛一圈吧 🪐",
+    "greetPhenomena": "今天，揭开天象背后的秘密 ☄️",
+    "unitProgress": "{{done}}/{{total}} 关",
+    "sectionLabel": "第 {{section}} 章 · 已通关 {{done}}/{{total}}",
+    "start": "开始",
+    "review": "复习",
+    "locked": "未解锁",
+    "startWith": "开始 · {{subtitle}}"
+  },
+  "lesson": {
+    "exit": "退出小课",
+    "question": "第 {{current}}/{{total}} 题",
+    "combo": "连击 ×{{count}}",
+    "next": "下一题",
+    "finish": "完成本课",
+    "correct": "答对了！",
+    "retry": "再想想",
+    "gotIt": "知道了",
+    "settleTitle": "关卡点亮！",
+    "correctCount": "答对",
+    "gainedXp": "获得经验",
+    "streakPlus": "连续打卡",
+    "claim": "领取奖励，回到星图",
+    "notFoundTitle": "找不到这一课",
+    "notFoundDesc": "它可能还没解锁，或链接失效了。",
+    "backToMap": "回到星图"
+  },
+  "daily": {
+    "title": "每日一题",
+    "todayQuestion": "今日题目",
+    "challenge": "今日挑战",
+    "rewardTitle": "答对赢 +{{xp}} 经验",
+    "rewardDesc": "每天一道天文题，坚持答题延续你的连击 🔥",
+    "doneNote": "✅ 今天的题目已完成，明天再来延续连击！"
+  },
+  "leaderboard": {
+    "title": "排行榜",
+    "subtitle": "本周积分 · 白银联赛",
+    "myXp": "你的积分",
+    "leagueSilver": "白银联赛",
+    "leagueDesc": "保持前三，本周结束时晋级黄金联赛 ⬆️",
+    "you": "（你）",
+    "points": "分"
+  },
+  "account": {
+    "role": "Lv.{{level}} · 天文学徒",
+    "streak": "连续打卡",
+    "totalXp": "总积分",
+    "progress": "通关进度",
+    "badgeWall": "徽章墙",
+    "unlockedCount": "已解锁 {{done}}/{{total}}",
+    "appearance": "外观主题",
+    "themeDark": "星夜深色",
+    "themeLight": "明亮模式",
+    "languageLabel": "语言"
+  }
+}

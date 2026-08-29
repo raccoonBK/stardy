@@ -1,0 +1,37 @@
+node_modules/
+.expo/
+dist/
+web-build/
+*.log
+*.tsbuildinfo
+.env
+.env.local
+.env.*.local
+.DS_Store
+next-env.d.ts
+expo-env.d.ts
+ios/
+android/
+.idea/
+.vscode/
+*.orig.*
+WR_EOF
+echo "--- wrote .gitignore ---"
+
+cat > /Users/raccoonbk/self_programs/app_stardy/mobile/.npmrc <<'NPM_EOF'
+node-linker=hoisted
+save-exact=true
+engine-strict=true
+legacy-peer-deps=true
+NPM_EOF
+echo "--- wrote .npmrc ---"
+
+cat > /Users/raccoonbk/self_programs/app_stardy/mobile/.nvmrc <<'NVM_EOF'
+24
+NVM_EOF
+echo "--- wrote .nvmrc ---"
+
+cat > /Users/raccoonbk/self_programs/app_stardy/mobile/expo-env.d.ts <<'EE_EOF'
+/// <reference types="expo/types" />
+EE_EOF
+echo "--- wrote expo-env.d.ts ---"

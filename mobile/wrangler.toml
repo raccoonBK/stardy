@@ -1,0 +1,12 @@
+name = "stardy"
+compatibility_date = "2025-04-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "./dist"
+
+# 主站：境外 / 港澳台 / 海外华人
+# 微信 / 阿里云备份可再加一个 environment，这里先一个默认主站
+
+# 如果你想用 Workers Functions 加后端（推荐），打开下面：
+# [[services]]
+# binding = "API"
+# service = "stardy-api"

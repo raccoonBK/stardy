@@ -1,0 +1,44 @@
+# Netlify configuration for Stardy / Astro Quest (Next.js 16 App Router).
+#
+# Required plugin: @netlify/plugin-nextjs is the canonical way to ship Next.js
+# on Netlify. It generates Lambda functions for API routes, sets the publish
+# directory, configures ISR/cache, and wires up image optimization. Without it
+# App Router routes and /api/* return 404s even when `next build` succeeds.
+#
+# Required env vars (set in Site settings -> Environment variables):
+#   NEXT_PUBLIC_APP_TITLE (recommended)        -> <title> + OG title
+#   NEXT_PUBLIC_APP_DESCRIPTION (recommended)  -> meta description
+# Optional: DATABASE_URL (only if you wire up Postgres), CRON_SECRET.
+
+#[ build section kept as reference; the live site is on Cloudflare Pages now ]
+  command = "npm run build"
+  # publish is set explicitly so it wins over any value cached in the
+  # Netlify UI ("publishOrigin: ui"). When the UI value is the repo root
+  # (/opt/build/repo), the Next.js plugin aborts with "Your publish
+  # directory cannot be the same as the base directory of your site".
+  # The plugin overwrites this with the Lambda output directory after
+  # next build succeeds.
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NPM_FLAGS = "--prefer-offline"
+
+# Long-cache Next.js fingerprinted assets.
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Canonical Next.js routing for App Router + RSC + image opt + API -> Lambda.
+# Pin to a known-good major; bump after testing. v5.x supports Next 13+.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# (No [[redirects]] here on purpose. Previous config added
+#   from = "/*"  to = "/index.html"
+#   from = "/api/*" to = "/.netlify/functions/server/:splat"
+# which broke the site: index.html doesn't exist in .next/, and the API
+# redirect pointed at functions the plugin hadn't created. The plugin handles
+# both correctly -- add custom redirects below only when you have a real
+# use case (legacy URLs, marketing-page aliases, etc.).
