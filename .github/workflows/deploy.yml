@@ -10,12 +10,9 @@ concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  TCB_REGION: ap-shanghai
-
 jobs:
   # ============================================================
-  # 1. Build mobile web
+  # 1. Build mobile web (re-usable artifact)
   # ============================================================
   build:
     runs-on: ubuntu-latest
@@ -31,6 +28,11 @@ jobs:
 
       - name: Install & build
         working-directory: mobile
+        env:
+          # Optional: bake the function URL into the web bundle. Set as GH
+          # Secret `TCB_API_URL` after the first function deploy. If unset,
+          # the SPA uses same-origin `/api/*` (works if you proxy at hosting).
+          EXPO_PUBLIC_API_BASE: ${{ secrets.TCB_API_URL }}
         run: |
           npm ci || npm install --no-audit --no-fund
           npm run build:web
@@ -51,9 +53,6 @@ jobs:
 
   # ============================================================
   # 2. Deploy CloudBase HTTP 云函数 (api)
-  #    - PR: deploy to a PR-scoped env or skip (skipping for now;
-  #          functions need real envId; PR preview skipped for backend)
-  #    - main: deploy to production env
   # ============================================================
   function:
     runs-on: ubuntu-latest
@@ -69,14 +68,14 @@ jobs:
           cache: npm
           cache-dependency-path: functions/api/package-lock.json
 
-      - name: Install function deps (offline-friendly)
+      - name: Install function deps
         working-directory: functions/api
         run: npm install --omit=dev --no-audit --no-fund --prefer-offline
 
       - name: Install CloudBase CLI
         run: npm install -g @cloudbase/cli@latest
 
-      - name: Login (device-code via secret refresh token)
+      - name: Login (api key)
         env:
           TENCENTCLOUD_SECRETID: ${{ secrets.TENCENTCLOUD_SECRETID }}
           TENCENTCLOUD_SECRETKEY: ${{ secrets.TENCENTCLOUD_SECRETKEY }}
@@ -84,20 +83,25 @@ jobs:
           tcb login --apiKeyId "$TENCENTCLOUD_SECRETID" --apiKey "$TENCENTCLOUD_SECRETKEY"
 
       - name: Deploy HTTP function `api`
-        working-directory: functions
         env:
           TCB_ENV_ID: ${{ secrets.TCB_ENV_ID }}
           TCB_ALLOW_ORIGIN: ${{ secrets.TCB_ALLOW_ORIGIN }}
         run: |
+          cd functions
           tcb fn deploy api --httpFn --force
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "✓ function api deployed"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Function URL (triggers):"
+          tcb fn detail api --env-id "$TCB_ENV_ID" 2>&1 | sed -n '/trigger\|Trigger\|servicePath\|InvokeUrl/p' | head -20 || true
+          echo ""
+          echo "Next: 抓到这里显示的 URL，设到 GH Secret TCB_API_URL，下次 build 就把"
+          echo "它 bake 进 mobile bundle。同源 + 跨域都能用。"
 
   # ============================================================
   # 3. Deploy static hosting 静态托管
-  #    PR: deploy to a temp env-scoped sub-path (still uses prod env;
-  #        user can route via custom domain or sub-path). For MVP we
-  #        skip PR preview for hosting to avoid stomping prod data.
-  #    main: deploy mobile/dist to root
   # ============================================================
   hosting:
     runs-on: ubuntu-latest
@@ -132,12 +136,13 @@ jobs:
           TCB_ENV_ID: ${{ secrets.TCB_ENV_ID }}
         run: |
           tcb hosting deploy mobile/dist --env-id "$TCB_ENV_ID" --yes
-          tcb hosting detail --env-id "$TCB_ENV_ID"
+          echo ""
+          echo "✓ hosting deployed"
+          echo "URL: https://${TCB_ENV_ID}.tcbapp.cn"
+          tcb hosting detail --env-id "$TCB_ENV_ID" 2>&1 | tail -20 || true
 
   # ============================================================
-  # 4. (Optional) PR preview
-  #    Builds the web artifact but does NOT deploy. Comment on the PR
-  #    with a "preview" message and skip destructive deploys.
+  # 4. PR preview — builds but does NOT deploy
   # ============================================================
   preview:
     runs-on: ubuntu-latest
@@ -145,7 +150,7 @@ jobs:
     if: github.event_name == 'pull_request'
     timeout-minutes: 5
     steps:
-      - name: Comment preview URL on PR
+      - name: Comment preview info on PR
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           message: |
@@ -156,5 +161,6 @@ jobs:
             本地预览：
             ```bash
             cd mobile
+            npm install
             npm run web   # http://localhost:8081
             ```
