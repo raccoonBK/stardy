@@ -79,6 +79,8 @@ jobs:
           TENCENTCLOUD_SECRETID: ${{ secrets.TENCENTCLOUD_SECRETID }}
           TENCENTCLOUD_SECRETKEY: ${{ secrets.TENCENTCLOUD_SECRETKEY }}
         run: |
+          test -n "$TENCENTCLOUD_SECRETID" || { echo "::error::Missing GitHub Secret TENCENTCLOUD_SECRETID"; exit 1; }
+          test -n "$TENCENTCLOUD_SECRETKEY" || { echo "::error::Missing GitHub Secret TENCENTCLOUD_SECRETKEY"; exit 1; }
           tcb login --apiKeyId "$TENCENTCLOUD_SECRETID" --apiKey "$TENCENTCLOUD_SECRETKEY"
 
       - name: Deploy HTTP function `api`
@@ -126,6 +128,8 @@ jobs:
           TENCENTCLOUD_SECRETID: ${{ secrets.TENCENTCLOUD_SECRETID }}
           TENCENTCLOUD_SECRETKEY: ${{ secrets.TENCENTCLOUD_SECRETKEY }}
         run: |
+          test -n "$TENCENTCLOUD_SECRETID" || { echo "::error::Missing GitHub Secret TENCENTCLOUD_SECRETID"; exit 1; }
+          test -n "$TENCENTCLOUD_SECRETKEY" || { echo "::error::Missing GitHub Secret TENCENTCLOUD_SECRETKEY"; exit 1; }
           tcb login --apiKeyId "$TENCENTCLOUD_SECRETID" --apiKey "$TENCENTCLOUD_SECRETKEY"
 
       - name: Download mobile/dist artifact
