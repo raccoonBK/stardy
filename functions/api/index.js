@@ -29,7 +29,6 @@
 
 const http = require('http');
 const { URL } = require('url');
-const { EventEmitter } = require('events');
 const cloudbase = require('@cloudbase/node-sdk');
 
 const ENV_ID = process.env.TCB_ENV_ID || '';
@@ -425,58 +424,6 @@ const server = http.createServer((req, res) => {
     } catch (_) { try { res.end(); } catch {} }
   });
 });
-
-/**
- * CloudBase HTTP 网关的普通云函数入口。
- * 网关把 HTTP 请求包装成 event，而不是直接把 req/res 注入运行时。
- * 保留下面的本地 HTTP 适配器，方便 `node index.js` 本地联调。
- */
-exports.main = async function main(event) {
-  const req = new EventEmitter();
-  const headers = {};
-  for (const [key, value] of Object.entries(event && event.headers ? event.headers : {})) {
-    headers[String(key).toLowerCase()] = Array.isArray(value) ? value.join(',') : String(value);
-  }
-  req.method = String((event && event.httpMethod) || 'GET').toUpperCase();
-  req.url = String((event && event.path) || '/');
-  req.headers = headers;
-
-  const response = await new Promise((resolve) => {
-    const res = {
-      statusCode: 200,
-      responseHeaders: {},
-      writeHead(statusCode, responseHeaders) {
-        this.statusCode = statusCode;
-        this.responseHeaders = responseHeaders || {};
-      },
-      end(body) {
-        resolve({
-          statusCode: this.statusCode,
-          headers: this.responseHeaders,
-          body: body || '',
-          isBase64Encoded: false,
-        });
-      },
-    };
-
-    const url = new URL(req.url, 'http://127.0.0.1');
-    Promise.resolve(handle(req, res, url)).catch((error) => {
-      console.error('[event handler]', error);
-      sendJson(res, 500, { error: error.message || 'internal' }, corsHeaders(req));
-    });
-
-    let body = event && event.body ? String(event.body) : '';
-    if (event && event.isBase64Encoded && body) {
-      body = Buffer.from(body, 'base64').toString('utf8');
-    }
-    process.nextTick(() => {
-      if (body) req.emit('data', Buffer.from(body));
-      req.emit('end');
-    });
-  });
-
-  return response;
-};
 
 if (require.main === module) {
   const PORT = process.env.PORT || 9000;
