@@ -1,0 +1,11 @@
+{
+  "name": "stardy-api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "@cloudbase/node-sdk": "^3.5.0"
+  }
+}

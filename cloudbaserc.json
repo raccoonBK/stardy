@@ -1,0 +1,34 @@
+{
+  "version": "2.0",
+  "envId": "${TCB_ENV_ID}",
+  "functionRoot": "./functions",
+  "functions": [
+    {
+      "name": "api",
+      "timeout": 30,
+      "memorySize": 256,
+      "runtime": "Nodejs18.15",
+      "installDependency": false,
+      "envVariables": {
+        "TCB_ENV_ID": "${TCB_ENV_ID}",
+        "TCB_ALLOW_ORIGIN": "${TCB_ALLOW_ORIGIN}"
+      },
+      "triggers": [
+        {
+          "name": "api-gateway",
+          "type": "apigw",
+          "config": {
+            "serviceName": "stardy-api",
+            "path": "/api",
+            "method": "ANY",
+            "apiName": "stardy-api",
+            "function": {
+              "isIntegrated": "TRUE",
+              "functionName": "api"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

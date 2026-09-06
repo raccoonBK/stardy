@@ -1,18 +1,27 @@
 /**
- * Stardy · API client for the Cloudflare Worker backend.
+ * Stardy · API client for the 腾讯云 CloudBase HTTP 云函数.
  *
- * In production: set EXPO_PUBLIC_API_BASE to your Worker URL
- *   (e.g. https://stardy-api.<account>.workers.dev).
+ *  - 默认 ''（同源 /api/*），适用于 CloudBase 静态托管 + APIGW 把 /api/*
+ *    路由到 `api` 云函数的场景（生产推荐配置）
+ *  - 本地 dev: `EXPO_PUBLIC_API_BASE=http://127.0.0.1:9000/api`
+ *    （cloud function 用 `node functions/api/index.js` 本地起在 9000 端口）
+ *  - 显式覆盖: `EXPO_PUBLIC_API_BASE=https://xxx.apigw.tencentcs.com/release/api`
  *
- * In dev: defaults to http://127.0.0.1:8787 (wrangler dev runs there).
+ *  部署时不需要 env 变量也能跑（静态托管默认就有 env domain + APIGW），
+ *  但若用户想自定义域名 / 直连函数 URL，可设这个。
  */
 
-const BASE =
+const BASE: string =
   (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_API_BASE) ||
-  'http://127.0.0.1:8787';
+  '';
+
+function fullUrl(path: string): string {
+  if (!BASE) return path;
+  return `${BASE.replace(/\/$/, '')}${path.startsWith('/') ? path : '/' + path}`;
+}
 
 async function http<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await fetch(fullUrl(path), {
     ...init,
     credentials: 'include',
     headers: {
