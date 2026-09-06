@@ -36,13 +36,13 @@ EXPO_PUBLIC_API_BASE=http://127.0.0.1:9000/api npm run web
                                 │
                                 └── GitHub Actions (deploy.yml)
                                         │
-                                        ├──▶ CloudBase 静态托管  (mobile/dist → <envId>.tcbapp.cn)
+                                        ├──▶ CloudBase 静态托管  (mobile/dist → <envId>-<appid>.tcloudbaseapp.com)
                                         │
                                         └──▶ CloudBase HTTP 云函数 (functions/api → 函数名 api)
                                                                 │
-                                                                └──▶ APIGW 触发器 (path /api/*)
+                                                                └──▶ HTTP 网关 (/api → api 函数)
                                                                           ↑
-                                                                          静态托管同源即可 /api 调函数
+                                                                          mobile 构建时注入 service.tcloudbase.com API 地址
 ```
 
 ### GitHub Secrets 配置
@@ -52,7 +52,8 @@ EXPO_PUBLIC_API_BASE=http://127.0.0.1:9000/api npm run web
 | `TENCENTCLOUD_SECRETID` | 腾讯云 API key |
 | `TENCENTCLOUD_SECRETKEY` | 腾讯云 API key |
 | `TCB_ENV_ID` | 腾讯云 CloudBase 环境 ID |
-| `TCB_ALLOW_ORIGIN` | CORS 允许源（如 `https://xxx.tcbapp.cn`，本地 dev 用 `*`） |
+| `TCB_API_URL` | 可选，HTTP API 地址；默认是 `https://<envId>.service.tcloudbase.com` |
+| `TCB_ALLOW_ORIGIN` | CORS 允许源；当前默认 `*`，上线自定义域名后再收紧 |
 
 ### 一次性手动配置
 
@@ -60,14 +61,18 @@ EXPO_PUBLIC_API_BASE=http://127.0.0.1:9000/api npm run web
 2. 创建环境（建议**上海**区域，免费额度足够）
 3. 拿到 `EnvId` → 设为 GitHub Secret `TCB_ENV_ID`
 4. 访问管理 → API 密钥管理 → 新建 API key → 把 SecretId/SecretKey 也设为 Secret
-5. 第一次部署后到 console → 云函数 → `api` → 函数配置 → 安全规则：
-   - **触发器：APIGW 触发器** `path=/api/*`，方法 `ANY`
-   - 安全规则：放行匿名访问（lobby 游戏不需要账号强绑）
-   - 或者把允许的 Origin 加进 `TCB_ALLOW_ORIGIN`
+5. HTTP 网关路由由工作流收敛为：
+   - 域名：`https://<envId>.service.tcloudbase.com`
+   - 路径：`/api`
+   - 上游：HTTP 云函数 `api`
+   - 开启路径透传，故 `/api/health`、`/api/auth` 等接口均可用
+   - API 目前使用应用内昵称登录；正式发布前应把 `TCB_ALLOW_ORIGIN` 从 `*` 收紧为正式站点
 
 ### 域名
 
-- 默认：`https://<TCB_ENV_ID>.tcbapp.cn`
+- 静态托管默认：`https://<envId>-<appid>.tcloudbaseapp.com`
+- 当前预览：`https://pengbi-d9g6dq0tobf99cd63-1424661943.tcloudbaseapp.com`
+- API：`https://pengbi-d9g6dq0tobf99cd63.service.tcloudbase.com/api`
 - 自定义域名：CloudBase 静态托管 → 自定义域名 → CNAME + HTTPS 一键配置
 
 ## 课程数据

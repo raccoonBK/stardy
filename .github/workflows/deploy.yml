@@ -29,10 +29,9 @@ jobs:
       - name: Install & build
         working-directory: mobile
         env:
-          # Optional: bake the function URL into the web bundle. Set as GH
-          # Secret `TCB_API_URL` after the first function deploy. If unset,
-          # the SPA uses same-origin `/api/*` (works if you proxy at hosting).
-          EXPO_PUBLIC_API_BASE: ${{ secrets.TCB_API_URL }}
+          # CloudBase HTTP functions use the environment service domain.
+          # A secret can override it for a custom domain or another gateway.
+          EXPO_PUBLIC_API_BASE: ${{ secrets.TCB_API_URL || 'https://pengbi-d9g6dq0tobf99cd63.service.tcloudbase.com' }}
         run: |
           npm ci || npm install --no-audit --no-fund
           npm run build:web
@@ -85,20 +84,24 @@ jobs:
       - name: Deploy HTTP function `api`
         env:
           TCB_ENV_ID: ${{ secrets.TCB_ENV_ID }}
-          TCB_ALLOW_ORIGIN: ${{ secrets.TCB_ALLOW_ORIGIN }}
         run: |
-          cd functions
-          tcb fn deploy api --httpFn --force
+          tcb fn deploy api --httpFn --force -e "$TCB_ENV_ID"
+          API_DOMAIN="${TCB_ENV_ID}.service.tcloudbase.com"
+          ROUTE_JSON=$(tcb routes list -e "$TCB_ENV_ID" --filter "Domain=${API_DOMAIN}" --json)
+          if printf '%s' "$ROUTE_JSON" | python3 -c 'import json,sys; d=json.load(sys.stdin); raise SystemExit(0 if any(r.get("path")=="/api" and r.get("upstreamResourceName")=="api" for r in d.get("data",[])) else 1)'; then
+            printf 'Y\n' | tcb routes edit -e "$TCB_ENV_ID" --data "{\"domain\":\"$API_DOMAIN\",\"routes\":[{\"path\":\"/api\",\"upstreamResourceType\":\"WEB_SCF\",\"upstreamResourceName\":\"api\",\"enable\":true,\"enableAuth\":false,\"enablePathTransmission\":true}]}" --json
+          else
+            printf 'Y\n' | tcb routes add -e "$TCB_ENV_ID" --data "{\"domain\":\"$API_DOMAIN\",\"routes\":[{\"path\":\"/api\",\"upstreamResourceType\":\"WEB_SCF\",\"upstreamResourceName\":\"api\",\"enable\":true,\"enableAuth\":false,\"enablePathTransmission\":true}]}" --json
+          fi
           echo ""
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "✓ function api deployed"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo ""
           echo "Function URL (triggers):"
-          tcb fn detail api --env-id "$TCB_ENV_ID" 2>&1 | sed -n '/trigger\|Trigger\|servicePath\|InvokeUrl/p' | head -20 || true
+          tcb fn detail api -e "$TCB_ENV_ID" 2>&1 | sed -n '/trigger\|Trigger\|servicePath\|InvokeUrl/p' | head -20 || true
           echo ""
-          echo "Next: 抓到这里显示的 URL，设到 GH Secret TCB_API_URL，下次 build 就把"
-          echo "它 bake 进 mobile bundle。同源 + 跨域都能用。"
+          echo "API URL: https://${TCB_ENV_ID}.service.tcloudbase.com"
 
   # ============================================================
   # 3. Deploy static hosting 静态托管
@@ -135,11 +138,10 @@ jobs:
         env:
           TCB_ENV_ID: ${{ secrets.TCB_ENV_ID }}
         run: |
-          tcb hosting deploy mobile/dist --env-id "$TCB_ENV_ID" --yes
+          tcb hosting deploy mobile/dist --env-id "$TCB_ENV_ID"
           echo ""
           echo "✓ hosting deployed"
-          echo "URL: https://${TCB_ENV_ID}.tcbapp.cn"
-          tcb hosting detail --env-id "$TCB_ENV_ID" 2>&1 | tail -20 || true
+          tcb hosting detail --env-id "$TCB_ENV_ID" --json
 
   # ============================================================
   # 4. PR preview — builds but does NOT deploy

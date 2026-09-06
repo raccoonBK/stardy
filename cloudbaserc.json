@@ -1,34 +1,21 @@
 {
   "version": "2.0",
-  "envId": "${TCB_ENV_ID}",
+  "envId": "pengbi-d9g6dq0tobf99cd63",
   "functionRoot": "./functions",
   "functions": [
     {
       "name": "api",
+      "type": "HTTP",
+      "public": true,
+      "gatewayPath": "/api",
       "timeout": 30,
       "memorySize": 256,
       "runtime": "Nodejs18.15",
       "installDependency": false,
       "envVariables": {
-        "TCB_ENV_ID": "${TCB_ENV_ID}",
-        "TCB_ALLOW_ORIGIN": "${TCB_ALLOW_ORIGIN}"
-      },
-      "triggers": [
-        {
-          "name": "api-gateway",
-          "type": "apigw",
-          "config": {
-            "serviceName": "stardy-api",
-            "path": "/api",
-            "method": "ANY",
-            "apiName": "stardy-api",
-            "function": {
-              "isIntegrated": "TRUE",
-              "functionName": "api"
-            }
-          }
-        }
-      ]
+        "TCB_ENV_ID": "pengbi-d9g6dq0tobf99cd63",
+        "TCB_ALLOW_ORIGIN": "*"
+      }
     }
   ]
 }

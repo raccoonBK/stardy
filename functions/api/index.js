@@ -29,6 +29,7 @@
 
 const http = require('http');
 const { URL } = require('url');
+const { EventEmitter } = require('events');
 const cloudbase = require('@cloudbase/node-sdk');
 
 const ENV_ID = process.env.TCB_ENV_ID || '';
@@ -38,7 +39,6 @@ const SESSION_TTL_SECONDS = 30 * 86400;
 
 let app = null;
 let db = null;
-let dbReady = null;
 
 function initApp() {
   if (app) return app;
@@ -47,33 +47,17 @@ function initApp() {
   }
   app = cloudbase.init({
     env: ENV_ID,
-    secretId: process.env.TENCENTCLOUD_SECRETID,
-    secretKey: process.env.TENCENTCLOUD_SECRETKEY,
   });
   db = app.database();
   return app;
 }
 
 async function ensureCollections() {
-  if (dbReady) return dbReady;
+  // Collections are provisioned once during deployment with the CloudBase
+  // NoSQL management CLI. Calling createCollection inside every request can
+  // block the gateway for a cold-start-sized timeout in this environment.
   initApp();
-  dbReady = (async () => {
-    const names = ['users', 'sessions', 'groups', 'group_members', 'progress'];
-    for (const name of names) {
-      try {
-        await db.createCollection(name);
-      } catch (e) {
-        const msg = String(e && e.message || e);
-        // Already-exists is the expected idempotent path; anything else we
-        // log but do not throw — first write to a collection will succeed
-        // even if createCollection failed.
-        if (!/already|exist|EXIST/i.test(msg)) {
-          console.warn(`[ensureCollections] ${name}: ${msg}`);
-        }
-      }
-    }
-  })();
-  return dbReady;
+  return undefined;
 }
 
 // ---- helpers ----
@@ -143,7 +127,9 @@ function parseCookies(req) {
 
 async function getSessionUser(req) {
   const cookies = parseCookies(req);
-  const token = cookies[SESSION_COOKIE];
+  const authorization = req.headers.authorization || '';
+  const bearer = authorization.match(/^Bearer\s+(.+)$/i);
+  const token = (bearer && bearer[1]) || cookies[SESSION_COOKIE];
   if (!token) return null;
   initApp();
   try {
@@ -180,7 +166,7 @@ async function authPost(req, res, cors) {
   initApp();
   const userId = newId();
   try {
-    await db.collection('users').add({ _id: userId, name, created_at: Date.now() });
+    await db.collection('users').add({ _id: userId, uid: userId, name, created_at: Date.now() });
   } catch (e) {
     return sendJson(res, 500, { error: 'create user failed: ' + e.message }, cors);
   }
@@ -195,7 +181,10 @@ async function authPost(req, res, cors) {
   }).catch((e) => {
     console.warn('[auth sessions.add]', e.message);
   });
-  sendJson(res, 200, { id: userId, name }, {
+  // The HTTP 网关 may wrap Set-Cookie inside the JSON response. Return the
+  // token explicitly as well so Web/RN clients can persist it and use Bearer
+  // auth without relying on cookie header forwarding.
+  sendJson(res, 200, { id: userId, name, token }, {
     ...cors,
     'Set-Cookie': setSessionCookie(token, SESSION_TTL_SECONDS),
   });
@@ -437,7 +426,61 @@ const server = http.createServer((req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 9000;
-server.listen(PORT, () => {
-  console.log(`[stardy-api] listening on :${PORT} (env=${ENV_ID})`);
-});
+/**
+ * CloudBase HTTP 网关的普通云函数入口。
+ * 网关把 HTTP 请求包装成 event，而不是直接把 req/res 注入运行时。
+ * 保留下面的本地 HTTP 适配器，方便 `node index.js` 本地联调。
+ */
+exports.main = async function main(event) {
+  const req = new EventEmitter();
+  const headers = {};
+  for (const [key, value] of Object.entries(event && event.headers ? event.headers : {})) {
+    headers[String(key).toLowerCase()] = Array.isArray(value) ? value.join(',') : String(value);
+  }
+  req.method = String((event && event.httpMethod) || 'GET').toUpperCase();
+  req.url = String((event && event.path) || '/');
+  req.headers = headers;
+
+  const response = await new Promise((resolve) => {
+    const res = {
+      statusCode: 200,
+      responseHeaders: {},
+      writeHead(statusCode, responseHeaders) {
+        this.statusCode = statusCode;
+        this.responseHeaders = responseHeaders || {};
+      },
+      end(body) {
+        resolve({
+          statusCode: this.statusCode,
+          headers: this.responseHeaders,
+          body: body || '',
+          isBase64Encoded: false,
+        });
+      },
+    };
+
+    const url = new URL(req.url, 'http://127.0.0.1');
+    Promise.resolve(handle(req, res, url)).catch((error) => {
+      console.error('[event handler]', error);
+      sendJson(res, 500, { error: error.message || 'internal' }, corsHeaders(req));
+    });
+
+    let body = event && event.body ? String(event.body) : '';
+    if (event && event.isBase64Encoded && body) {
+      body = Buffer.from(body, 'base64').toString('utf8');
+    }
+    process.nextTick(() => {
+      if (body) req.emit('data', Buffer.from(body));
+      req.emit('end');
+    });
+  });
+
+  return response;
+};
+
+if (require.main === module) {
+  const PORT = process.env.PORT || 9000;
+  server.listen(PORT, () => {
+    console.log(`[stardy-api] listening on :${PORT} (env=${ENV_ID})`);
+  });
+}

@@ -12,8 +12,27 @@
  */
 
 const BASE: string =
-  (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_API_BASE) ||
+  process.env.EXPO_PUBLIC_API_BASE ||
   '';
+
+const TOKEN_KEY = 'stardy:session-token';
+
+function readToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return window.localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function writeToken(token: string | null): void {
+  if (typeof window === 'undefined') return;
+  try {
+    if (token) window.localStorage.setItem(TOKEN_KEY, token);
+    else window.localStorage.removeItem(TOKEN_KEY);
+  } catch {}
+}
 
 function fullUrl(path: string): string {
   if (!BASE) return path;
@@ -21,11 +40,13 @@ function fullUrl(path: string): string {
 }
 
 async function http<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const token = readToken();
   const res = await fetch(fullUrl(path), {
     ...init,
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(init.headers ?? {}),
     },
   });
@@ -37,21 +58,39 @@ async function http<T>(path: string, init: RequestInit = {}): Promise<T> {
     } catch {}
     throw new Error(body.error || `${res.status} ${res.statusText}`);
   }
-  return (text ? JSON.parse(text) : null) as T;
+  const payload = text ? JSON.parse(text) : null;
+  // CloudBase HTTP 网关 may serialize a normal cloud-function response as
+  // { statusCode, headers, body, isBase64Encoded }.
+  if (
+    payload &&
+    typeof payload === 'object' &&
+    typeof payload.body === 'string' &&
+    typeof payload.statusCode === 'number'
+  ) {
+    return (payload.body ? JSON.parse(payload.body) : null) as T;
+  }
+  return payload as T;
 }
 
 export const api = {
   health: () => http<{ ok: boolean; env: string }>('/api/health'),
 
   auth: {
-    signIn: (name: string) =>
-      http<{ id: string; name: string }>('/api/auth', {
+    signIn: async (name: string) => {
+      const result = await http<{ id: string; name: string; token?: string }>('/api/auth', {
         method: 'POST',
         body: JSON.stringify({ name }),
-      }),
+      });
+      if (result.token) writeToken(result.token);
+      return result;
+    },
     me: () =>
       http<{ user: { id: string; name: string } | null }>('/api/me').catch(() => ({ user: null })),
-    logout: () => http<{ ok: true }>('/api/auth/logout', { method: 'POST' }),
+    logout: async () => {
+      const result = await http<{ ok: true }>('/api/auth/logout', { method: 'POST' });
+      writeToken(null);
+      return result;
+    },
   },
 
   leaderboard: () =>

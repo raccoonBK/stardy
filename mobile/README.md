@@ -13,8 +13,7 @@ npm run typecheck
 
 ## 调后端
 
-默认 mobile 同源调 `/api/*`（假设 CloudBase 静态托管 + APIGW 触发器把 `/api/*`
-路由到 `api` 云函数）。本地 dev 可显式覆盖：
+生产构建默认把 API 地址注入为 CloudBase HTTP 云函数服务域名；本地 dev 可显式覆盖：
 
 ```bash
 EXPO_PUBLIC_API_BASE=http://127.0.0.1:9000/api npm run web
